@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pavankalyanaakula</title>
+  <meta name="description" content="Portfolio: projects, services, performance, React, web dev." />
+  <style>
+    :root{
+      --bg:#0b0d12; --fg:#e6e9ef; --muted:#a6adbb; --card:#11141b;
+      --accent:#7c3aed; --accent-2:#22d3ee; --border:rgba(230,233,239,0.08);
+      --radius:18px; --gap:28px;
+    }
+    :root.light{ --bg:#fff; --fg:#0b1020; --muted:#465067; --card:#f7f8fb; --accent:#6d28d9; --accent-2:#0891b2; --border:rgba(11,16,32,0.08) }
+
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;background:
+      radial-gradient(1200px 600px at 30% -10%, rgba(124,58,237,.15), transparent 60%),
+      radial-gradient(900px 500px at 120% 10%, rgba(34,211,238,.12), transparent 60%),
+      var(--bg);
+      color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+
+    .container{max-width:1200px;margin:0 auto;padding:0 20px}
+
+    /* NAVBAR (no hamburger) */
+    .nav{--nav-h:68px;position:sticky;top:0;z-index:1000;background:rgba(11,13,18,.88);
+      border-bottom:1px solid var(--border);backdrop-filter:blur(10px)}
+    :root.light .nav{background:rgba(255,255,255,.92)}
+    .nav .bar{min-height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:600}
+    .dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+    .primary-links{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .primary-links a{padding:8px 14px;border-radius:12px;color:var(--muted)}
+    .primary-links a:hover,.primary-links a.active{background:var(--border);color:var(--fg)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--border);border-radius:12px}
+    .icon-btn{padding:8px 10px;aspect-ratio:1/1}
+
+    /* Mobile scrollable pills */
+    .scrollnav{display:none;padding:10px 0;border-top:1px solid var(--border);background:transparent}
+    .pillbar{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+    .pillbar::-webkit-scrollbar{height:6px}
+    .pillbar::-webkit-scrollbar-thumb{background:var(--border);border-radius:999px}
+    .pill{scroll-snap-align:center;white-space:nowrap;border:1px solid var(--border);border-radius:999px;padding:8px 14px;color:var(--muted);flex:0 0 auto}
+    .pill.active,.pill:hover{background:var(--border);color:var(--fg)}
+
+    @media (max-width:768px){
+      .primary-links{display:none}
+      .scrollnav{display:block}
+    }
+
+    /* HERO & sections */
+    section{padding:80px 0;scroll-margin-top:calc(var(--nav-h) + 12px)}
+    .hero{padding:100px 0 60px;display:grid;grid-template-columns:1fr;gap:40px;align-items:center}
+    .hero h1{font-size:clamp(2.4rem,7vw,4rem);line-height:1.1;margin:0 0 16px}
+    .lead{font-size:1.2rem;color:var(--muted);margin-bottom:24px}
+    .badges{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0}
+    .badge{font-size:.9rem;padding:8px 14px;border:1px solid var(--border);border-radius:999px;color:var(--muted)}
+    .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+    h2{font-size:clamp(2rem,5vw,2.8rem);margin:0 0 12px}
+    .section-sub{color:var(--muted);font-size:1.1rem;max-width:700px;margin-bottom:40px}
+
+    /* Grid */
+    .grid{display:grid;gap:var(--gap);grid-template-columns:repeat(auto-fit,minmax(260px,1fr));align-items:stretch}
+    .grid>*{height:100%}
+
+    /* Services */
+    .service{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:14px}
+    .service .kicker{color:var(--muted)}
+    .chip{font-size:.8rem;padding:4px 10px;background:var(--border);border-radius:999px;color:var(--muted)}
+    .price{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+    /* Cards */
+    .project,.blog-post{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s ease, box-shadow .2s ease}
+    .project:hover,.blog-post:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,.28)}
+    .thumb,.blog-thumb{height:auto;aspect-ratio:16/9;background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(34,211,238,.12));border-bottom:1px solid var(--border)}
+    .project-content,.blog-content{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1}
+
+    /* Contact */
+    #contactForm{display:grid;gap:14px}
+    #contactForm input,#contactForm textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--fg);font:inherit}
+    #contactForm label{display:block}
+
+    footer{padding:80px 0 40px;text-align:center;color:var(--muted);font-size:.95rem}
+
+    @media (min-width:700px){.hero{grid-template-columns:1.3fr .7fr}}
+    @media (max-width:600px){.container{padding:0 16px}section{padding:60px 0}}
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR: desktop links + mobile scrollable pills, no hamburger -->
+  <header class="nav">
+    <div class="container bar">
+      <div class="brand"><div class="dot"></div><strong>Aakula Pavan Kalyan 😍</strong></div>
+      <nav class="primary-links">
+        <a href="#services">Services</a>
+        <a href="#work">Work</a>
+        <a href="#blog">Blog</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <button class="btn icon-btn" id="themeToggle" aria-label="Toggle theme">☼</button>
+      </nav>
+    </div>
+    <!-- Mobile pill bar -->
+    <div class="scrollnav">
+      <div class="container">
+        <div class="pillbar" id="pillbar">
+          <a class="pill" href="#services">Services</a>
+          <a class="pill" href="#work">Work</a>
+          <a class="pill" href="#blog">Blog</a>
+          <a class="pill" href="#about">About</a>
+          <a class="pill" href="#contact">Contact</a>
+          <button class="pill" id="themeToggleMobile" aria-label="Toggle theme">☼</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero" id="home">
+      <div>
+        <h1>Software Developer</h1>
+        <p class="lead">focused on fast, resilient web apps.</p>
+        <div class="badges">
+          <span class="badge">Open to roles</span>
+          <span class="badge">Available for freelance</span>
+          <span class="badge">📚 Lifelong Learner</span>
+        </div>
+        <div class="cta">
+          <a class="btn primary" href="#services">View Services</a>
+          <a class="btn" href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <div>
+        <div>
+  <img 
+    src="images/pk1.jpg" 
+    alt="Portrait of Your Name" 
+    style="
+      width:100%;
+      aspect-ratio:1;
+      object-fit:cover;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      background:var(--card);
+      box-shadow:0 4px 12px rgba(0,0,0,0.25);
+    " 
+    loading="lazy"
+  >
+</div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services">
+      <h2>Services</h2>
+      <p class="section-sub">Flexible engagements that meet you where you are—audits, delivery, and ongoing engineering support.</p>
+      <div class="grid" id="servicesGrid"></div>
+    </section>
+
+    <!-- BLOG -->
+    <section id="blog">
+      <h2>Blog</h2>
+      <p class="section-sub">Deep dives into performance, React patterns, and building for scale.</p>
+      <div style="margin-bottom:32px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <strong>Filter:</strong>
+        <button class="btn active" data-tag="all">All</button>
+        <button class="btn" data-tag="performance">Tech News</button>
+        
+      </div>
+      <div class="grid" id="blogGrid"></div>
+    </section>
+
+    <!-- WORK -->
+    <section id="work">
+      <h2>Selected Work</h2>
+      <p class="section-sub">Real projects with measurable impact.</p>
+      <div style="margin-bottom:32px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <strong>Filter:</strong>
+        <button class="btn active" data-pfilter="all">Machine Learning</button>
+        <button class="btn" data-pfilter="performance">Devlopment</button>
+      </div>
+      <div class="grid" id="projects"></div>
+    </section>
+
+    <!-- ABOUT -->
+     <!-- ABOUT -->
+<section id="about">
+  <h2>About</h2>
+
+  <div class="grid">
+    <!-- Bio + Focus -->
+    <div style="padding:28px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">
+      <p style="font-size:1.05rem;margin-top:0">
+        I’m a <strong>Machine Learning and Django Developer</strong> passionate about building intelligent systems 
+        and scalable web applications. I bridge the gap between <strong>data-driven decision-making</strong> 
+        and <strong>robust backend engineering</strong>, turning prototypes into production-ready products.
+      </p>
+
+      <ul style="margin:18px 0 0;padding-left:20px">
+        <li><strong>Currently:</strong> Developing ML-powered APIs and full-stack Django solutions</li>
+        <li><strong>Focus Areas:</strong> Deep Learning, NLP, REST APIs, MLOps</li>
+      </ul>
+
+      <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap">
+        <span class="badge">🤖 Machine Learning</span>
+        <span class="badge">🌐 Django & REST APIs</span>
+        <span class="badge">🧠 Deep Learning & NLP</span>
+        <span class="badge">⚙️ MLOps & Deployment</span>
+      </div>
+
+      <div style="margin-top:22px">
+        <h3 style="margin:0 0 8px;font-size:1.1rem;color:var(--muted)">Currently Working On</h3>
+        <ul style="margin:8px 0 0;padding-left:20px">
+          <li>Deploying ML models as scalable Django APIs</li>
+          <li>Integrating transformer-based models into real-world applications</li>
+          <li>Improving data pipelines and automating retraining workflows</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Highlights / Skills -->
+    <div style="padding:28px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">
+      <h3 style="margin:0 0 16px">Highlights & Impact</h3>
+
+      <div class="grid" style="--gap:16px; grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+        <div class="stat">
+          <div class="stat-num" data-kpi="12"></div>
+          <div class="stat-label">Deployed ML APIs</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" data-kpi="97">97%</div>
+          <div class="stat-label">Model accuracy achieved</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" data-kpi="8"></div>
+          <div class="stat-label">Django full-stack apps</div>
+        </div>
+      </div>
+
+      <h3 style="margin:22px 0 10px">Tech Stack</h3>
+      <div style="display:flex; flex-wrap:wrap; gap:10px">
+        <span class="chip">Python</span>
+        <span class="chip">Django</span>
+        <span class="chip">Machine learning</span>
+        <span class="chip">Pandas / NumPy</span>
+        <span class="chip">scikit-learn</span>
+        <span class="chip">PyTorch / TensorFlow</span>
+        <span class="chip">MySQL</span>
+        <span class="chip">Core Java</span>
+        <span class="chip">Data Structures</span>
+        <span class="chip">HTML / CSS / JS</span>
+      </div>
+
+      <div style="margin-top:22px; display:flex; gap:12px; flex-wrap:wrap">
+        <a class="btn" href="mailto:pavankalyanaakula@gmail.com">Hire Me</a>
+        <a class="btn" href="resume/Pavan_Kalyan_Resume.pdf" target="_blank" rel="noopener">View Resume</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <h2>Contact</h2>
+
+  <div class="grid">
+    <!-- Contact Info & Social Links -->
+    <div style="padding:32px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">
+      <p class="section-sub">Have a project, role, or collaboration in mind?</p>
+
+      <p style="margin:24px 0">
+        <a class="btn" href="mailto:pavankalyanaakula@gmail.com">Email Me</a>
+      </p>
+
+      <!-- Social Links -->
+      <div style="margin-top:16px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+        <a href="https://github.com/PavanKalyanAakula"
+           target="_blank"
+           rel="noopener"
+           aria-label="GitHub"
+           style="color:var(--muted);transition:color .2s ease">
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/aakula-pavan-kalyan-a7965b237"
+           target="_blank"
+           rel="noopener"
+           aria-label="LinkedIn"
+           style="color:var(--muted);transition:color .2s ease">
+          LinkedIn
+        </a>
+        <a href="https://www.instagram.com/_the.pk._?igsh=MXVuNmN3eXBwYnJ1OA=="
+           target="_blank"
+           rel="noopener"
+           aria-label="Instagram"
+           style="color:var(--muted);transition:color .2s ease">
+          Instagram
+        </a>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <form id="contactForm"
+          style="padding:32px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">
+      <label>
+        Name<br>
+        <input required name="name" placeholder="Your full name">
+      </label>
+
+      <label>
+        Email<br>
+        <input required type="email" name="email" placeholder="your@email.com">
+      </label>
+
+      <label>
+        Message<br>
+        <textarea required name="message" rows="5" placeholder="Write your message..."></textarea>
+      </label>
+
+      <button class="btn" type="submit">Send</button>
+      <p id="formStatus" style="margin-top:16px;color:var(--accent)"></p>
+    </form>
+  </div>
+</section>
+
+
+  <footer class="container">
+    <p>© <span id="year"></span> Created By PavanKalyan |  All rights reserved. </p>
+  </footer>
+
+  <script>
+    // THEME (shared for desktop & mobile controls)
+    const themeToggle = document.getElementById('themeToggle');
+    const themeToggleMobile = document.getElementById('themeToggleMobile');
+    const root = document.documentElement;
+    const setTheme = (t)=>{ root.classList.toggle('light', t==='light'); localStorage.theme=t; (themeToggle||{}).textContent = root.classList.contains('light') ? '☾' : '☼'; };
+    setTheme(localStorage.theme || 'dark');
+    [themeToggle, themeToggleMobile].forEach(btn => btn && btn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      setTheme(root.classList.contains('light') ? 'dark' : 'light');
+    }));
+
+    // Active-link highlighting (desktop links + mobile pills)
+    const links = [...document.querySelectorAll('.primary-links a, .pillbar .pill[href]')];
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        const id = entry.target.id;
+        const active = entry.isIntersecting;
+        links.forEach(a=>{
+          if(a.getAttribute('href') === '#' + id){
+            a.classList.toggle('active', active);
+          }
+        });
+      });
+    }, {rootMargin: '-60% 0px -35% 0px', threshold: 0.01});
+    document.querySelectorAll('main section').forEach(sec=> io.observe(sec));
+
+    // SERVICES
+    const SERVICES = [
+  {
+    id: 's1',
+    icon: '🤖',
+    title: 'AI & Machine Learning Solutions',
+    blurb: 'Custom ML models and AI integrations that deliver insights, automation, and smarter products.',
+    items: [
+      'End-to-end ML pipelines (data → model → deploy)',
+      'Computer Vision & NLP applications',
+      'Generative AI (OpenAI / Gemini / Llama integrations)',
+      'Model optimization & MLOps setup'
+    ],
+    price: 'From 5,500/project',
+    cta: 'Build with AI',
+    link: 'mailto:pavankalyanaakula@gmail.com?subject=AI%20%26%20ML%20Solutions'
+  },
+  {
+    id: 's2',
+    icon: '🌐',
+    title: 'Web Development & Full-Stack Engineering',
+    blurb: 'Modern, responsive, and high-performance websites and web apps built with scalable architecture.',
+    items: [
+      'Responsive UI/UX with React and Next.js',
+      'API development with Python (FastAPI, Django)',
+      'Database design (PostgreSQL, MongoDB, MySQL)',
+      'SEO, accessibility & performance optimization'
+    ],
+    price: 'From 4,500/project',
+    cta: 'Start your project',
+    link: 'mailto:pavankalyanaakula@gmail.com?subject=Web%20Development'
+  },
+  {
+    id: 's3',
+    icon: '🧠',
+    title: 'AI-Powered Automation & Chatbots',
+    blurb: 'Leverage AI to automate workflows, customer interactions, and internal tools using natural language models.',
+    items: [
+      'Custom ChatGPT-style bots & copilots',
+      'Process automation via OpenAI / LangChain',
+      'Integration with Slack, Notion, CRMs, or APIs',
+      'Private data embedding & secure fine-tuning'
+    ],
+    price: 'From 3,800',
+    cta: 'Automate with AI',
+    link: 'mailto:pavankalyanaakula@gmail.com?subject=AI%20Automation%20%26%20Chatbots'
+  },
+  {
+    id: 's4',
+    icon: '📊',
+    title: 'Data Science & Predictive Analytics',
+    blurb: 'Transform raw data into meaningful insights and forecasts using data pipelines and ML algorithms.',
+    items: [
+      'Exploratory data analysis (EDA)',
+      'Feature engineering & model selection',
+      'Predictive dashboards (Streamlit, Dash)',
+      'Real-time analytics with cloud infrastructure'
+    ],
+    price: 'From 3,000/project',
+    cta: 'Discuss analytics',
+    link: 'mailto:pavankalyanaakula@gmail.com?subject=Data%20Science%20%26%20Analytics'
+  }
+];
+
+    document.getElementById('servicesGrid').innerHTML = SERVICES.map(s=>`
+      <article class="service">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="chip" aria-hidden="true" style="font-size:1rem">${s.icon}</div>
+          <div><h3 style="margin:0">${s.title}</h3><div class="kicker">${s.blurb}</div></div>
+        </div>
+        <ul>${s.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+        <div class="price"><strong>${s.price}</strong><a class="btn primary" href="${s.link}">${s.cta}</a></div>
+      </article>
+    `).join('');
+
+    
+  // BLOG
+   const BLOG_POSTS = [
+  {
+    id: 1,
+    title: "AI Agents in the Real World: What Teams Are Actually Shipping",
+    date: "2025-10-12",
+    readTime: "7 min",
+    excerpt: "From customer support copilots to internal automations—patterns that stick and pitfalls to avoid.",
+    tags: ["ai", "automation"],
+    image: "https://picsum.photos/seed/ai-agents/800/450",
+    imageAlt: "Abstract illustration of interconnected AI nodes",
+    content: "Teams are moving from chatbots to task-oriented agents with tools. This post covers planning loops, guardrails, evals, and cost control..."
+  },
+  {
+    id: 2,
+    title: "Edge + WebAssembly: Faster APIs Without the Cold Start Tax",
+    date: "2025-09-30",
+    readTime: "6 min",
+    excerpt: "Why WASM at the edge is winning for latency-sensitive workloads and how to migrate incrementally.",
+    tags: ["web", "wasm", "cloud"],
+    image: "https://picsum.photos/seed/edge-wasm/800/450",
+    imageAlt: "Server nodes connected across a world map",
+    content: "We look at runtime constraints, streaming responses, and perf tips. Includes a zero-dependency KV cache example..."
+  },
+  {
+    id: 3,
+    title: "RAG Done Right: Retrieval That Beats Hallucinations",
+    date: "2025-09-08",
+    readTime: "8 min",
+    excerpt: "Chunking, embeddings, and re-ranking—practical tweaks that move the needle.",
+    tags: ["ai", "nlp"],
+    image: "https://picsum.photos/seed/rag/800/450",
+    imageAlt: "Books and vectors concept art",
+    content: "We compare naive BM25, hybrid search, multi-vector stores, and show an eval harness to measure answer faithfulness..."
+  },
+  {
+    id: 4,
+    title: "Design Systems in 2025: Tokens, Themes, and Accessibility by Default",
+    date: "2025-08-22",
+    readTime: "5 min",
+    excerpt: "How teams ship consistent UI across web and native with token-driven pipelines.",
+    tags: ["design-system", "frontend"],
+    image: "https://picsum.photos/seed/designsystem/800/450",
+    imageAlt: "Color tokens and components grid",
+    content: "We cover token taxonomy, theming, motion/contrast prefs, and testing with story-based a11y checks..."
+  },
+  {
+    id: 5,
+    title: "GPU 101 for Devs: Serving AI Without Burning Cash",
+    date: "2025-07-29",
+    readTime: "6 min",
+    excerpt: "Batching, quantization, and autoscaling basics for inference backends.",
+    tags: ["ai", "infra"],
+    image: "https://picsum.photos/seed/gpu/800/450",
+    imageAlt: "Close-up of GPU heatsink and circuits",
+    content: "Latency vs. throughput tradeoffs, KV caches, token streaming, and when to prefer hosted vs. self-managed..."
+  },
+  {
+    id: 6,
+    title: "Web Perf Wins: Shipping Less JS With Islands and Streams",
+    date: "2025-06-30",
+    readTime: "5 min",
+    excerpt: "SSR, partial hydration, and HTML-first strategies that hold up on low-end devices.",
+    tags: ["performance", "react"],
+    image: "https://picsum.photos/seed/perf/800/450",
+    imageAlt: "Minimal webpage mock with loading bars",
+    content: "We show a migration plan from SPA to islands, plus metrics you can monitor (LCP, INP, TTFB) with real-user data..."
+  }
+];
+
+    // ---------- Robust Blog renderer with image fallbacks ----------
+const blogGrid = document.getElementById('blogGrid');
+
+// Placeholder cover (works reliably)
+const coverFallback = (title = 'Blog') =>
+  `https://placehold.co/800x450/png?text=${encodeURIComponent(title)}&bg=11141b&fg=e6e9ef`;
+
+// Render
+function renderBlog(posts) {
+  if (!Array.isArray(posts)) posts = [];
+
+  blogGrid.innerHTML = posts.map(p => {
+    const tags = Array.isArray(p.tags) ? p.tags : [];
+    const src = (p.image && p.image.startsWith('http')) ? p.image : coverFallback(p.title);
+
+    return `
+      <article class="blog-post" data-tags="${tags.join(' ')}" aria-labelledby="post-title-${p.id}">
+        <img
+          class="blog-thumb"
+          src="${src}"
+          data-fallback="${coverFallback(p.title)}"
+          alt="${(p.imageAlt || p.title).replace(/"/g, '&quot;')}"
+          width="800" height="450"
+          loading="lazy" decoding="async" referrerpolicy="no-referrer"
+          style="display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover"
+        />
+        <div class="blog-content">
+          <h3 id="post-title-${p.id}" style="margin:0 0 8px;">${p.title}</h3>
+          <div class="blog-meta">
+            <span>${new Date(p.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
+            <span>•</span>
+            <span>${p.readTime || '—'}</span>
+          </div>
+          <p style="color:var(--muted); margin:12px 0; flex:1;">${p.excerpt || ''}</p>
+
+          ${tags.length ? `
+            <div class="blog-tags">
+              ${tags.slice(0,5).map(t => `<span class="tag">#${t}</span>`).join('')}
+            </div>` : ''}
+
+          ${p.content ? `
+            <button class="read-more" data-post="${p.id}" aria-expanded="false" aria-controls="post-${p.id}">
+              Read more
+            </button>
+            <div class="full-post" id="post-${p.id}" hidden>
+              <p>${p.content}</p>
+              <button class="read-more" data-close="${p.id}" aria-expanded="true" aria-controls="post-${p.id}">
+                Collapse
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  // Attach robust error fallback to every image (no infinite loops)
+  blogGrid.querySelectorAll('img.blog-thumb').forEach(img => {
+    img.addEventListener('error', () => {
+      const fallback = img.getAttribute('data-fallback') || coverFallback('Blog');
+      if (img.src !== fallback) img.src = fallback;
+    }, { once: true });
+  });
+}
+
+// Initial render
+renderBlog(BLOG_POSTS);
+
+// Category filters (unchanged)
+document.querySelectorAll('[data-tag]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-tag]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const tag = btn.dataset.tag;
+    const list = tag === 'all' ? BLOG_POSTS : BLOG_POSTS.filter(p => (p.tags || []).includes(tag));
+    renderBlog(list);
+  });
+});
+
+// Read more / Collapse (delegated)
+blogGrid.addEventListener('click', (e) => {
+  const openBtn = e.target.closest('.read-more[data-post]');
+  const closeBtn = e.target.closest('.read-more[data-close]');
+
+  if (openBtn) {
+    const id = openBtn.dataset.post;
+    const full = document.getElementById(`post-${id}`);
+    if (!full) return;
+    const isHidden = full.hasAttribute('hidden');
+    full.toggleAttribute('hidden', !isHidden);
+    openBtn.setAttribute('aria-expanded', String(isHidden));
+    openBtn.textContent = isHidden ? 'Collapse' : 'Read more';
+  }
+
+  if (closeBtn) {
+    const id = closeBtn.dataset.close;
+    const full = document.getElementById(`post-${id}`);
+    if (!full) return;
+    full.setAttribute('hidden', '');
+    const opener = blogGrid.querySelector(`.read-more[data-post="${id}"]`);
+    if (opener) {
+      opener.setAttribute('aria-expanded', 'false');
+      opener.textContent = 'Read more';
+      opener.focus();
+    }
+  }
+});
+
+
+
+    // PROJECTS
+    // PROJECTS — Beginner-friendly ML + Django (with similar images + fallback)
+const PROJECTS = [
+  // ---- Beginner ML ----
+  {
+    id: 'bml1',
+    title: 'Iris Classifier',
+    tags: ['beginner','ml','classification'],
+    stack: ['Python','scikit-learn','Jupyter'],
+    impact: ['>95% accuracy','Confusion matrix'],
+    summary: 'Train/test a simple model on the classic Iris dataset and visualize metrics.',
+    image: 'https://picsum.photos/seed/iris/800/450',
+    imageAlt: 'Scatter plot of iris dataset',
+    links: { demo: '#', code: '#' }
+  },
+  {
+    id: 'bml2',
+    title: 'House Price Predictor',
+    tags: ['beginner','ml','regression'],
+    stack: ['Python','Pandas','scikit-learn'],
+    impact: ['R² score reported','Feature importance'],
+    summary: 'Predict housing prices with linear regression and show feature importance.',
+    image: 'https://picsum.photos/seed/house-price/800/450',
+    imageAlt: 'Chart of house prices and features',
+    links: { demo: '#', code: '#' }
+  },
+  {
+    id: 'bml3',
+    title: 'Image MNIST Digit Recognizer',
+    tags: ['beginner','ml','computer-vision'],
+    stack: ['Python','TensorFlow/Keras'],
+    impact: ['~99% on test','Saved model.h5'],
+    summary: 'Train a CNN on MNIST; expose a small script to predict from a PNG.',
+    image: 'https://picsum.photos/seed/mnist/800/450',
+    imageAlt: 'Handwritten digits grid',
+    links: { demo: '#', code: '#' }
+  },
+
+  // ---- Beginner Django ----
+  {
+    id: 'bdj1',
+    title: 'Django Blog (CRUD)',
+    tags: ['beginner','django','frontend','backend'],
+    stack: ['Django','SQLite','Bootstrap'],
+    impact: ['CRUD posts','Auth'],
+    summary: 'Basic blog with login, create/edit posts, and simple pagination.',
+    image: 'https://picsum.photos/seed/django-blog/800/450',
+    imageAlt: 'Blog post list UI',
+    links: { demo: '#', code: '#' }
+  },
+  {
+    id: 'bdj2',
+    title: 'Todo App with Auth',
+    tags: ['beginner','django','backend'],
+    stack: ['Django','SQLite'],
+    impact: ['User todos','Filters'],
+    summary: 'Per-user todo lists with completed/active filters and due dates.',
+    image: 'https://picsum.photos/seed/django-todo/800/450',
+    imageAlt: 'Todo list interface',
+    links: { demo: '#', code: '#' }
+  },
+  {
+    id: 'bdj3',
+    title: 'Contact Form + Email',
+    tags: ['beginner','django','forms'],
+    stack: ['Django','Email backend'],
+    impact: ['Form validation','Email send'],
+    summary: 'Contact form with server-side validation and email delivery.',
+    image: 'https://picsum.photos/seed/django-contact/800/450',
+    imageAlt: 'Contact form UI',
+    links: { demo: '#', code: '#' }
+  }
+];
+
+const projectsEl = document.getElementById('projects');
+
+// Fallback cover so thumbnails never break
+const projectCoverFallback = (title = 'Project') =>
+  `https://placehold.co/800x450/png?text=${encodeURIComponent(title)}&bg=11141b&fg=e6e9ef`;
+
+// Renderer (template strings, not JSX)
+const projectCard = (p) => `
+  <article class="project" data-tags="${p.tags.join(' ')}" aria-labelledby="proj-${p.id}">
+    ${
+      p.image
+        ? `<img class="thumb"
+               src="${p.image}"
+               data-fallback="${projectCoverFallback(p.title)}"
+               alt="${(p.imageAlt || p.title).replace(/"/g, '&quot;')}"
+               width="800" height="450" loading="lazy" decoding="async"
+               style="display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-bottom:1px solid var(--border)"/>`
+        : `<div class="thumb" aria-hidden="true"></div>`
+    }
+    <div class="project-content">
+      <h3 id="proj-${p.id}">${p.title}</h3>
+      <p style="color:var(--muted)">${p.summary}</p>
+      <p style="color:var(--muted)">${p.stack.join(' · ')}</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:auto">
+        ${(p.impact || []).map(i => `<span class="chip">${i}</span>`).join('')}
+      </div>
+      <div class="cta" style="margin-top:12px">
+        ${p.links?.demo ? `<a class="btn" href="${p.links.demo}">Demo</a>` : ''}
+        ${p.links?.code ? `<a class="btn" href="${p.links.code}">Code</a>` : ''}
+      </div>
+    </div>
+  </article>
+`;
+
+function renderProjects(list) {
+  projectsEl.innerHTML = list.map(projectCard).join('');
+  // Image fallback (once per img)
+  projectsEl.querySelectorAll('img.thumb').forEach(img => {
+    img.addEventListener('error', () => {
+      const fb = img.getAttribute('data-fallback') || projectCoverFallback('Project');
+      if (img.src !== fb) img.src = fb;
+    }, { once: true });
+  });
+}
+
+// Initial render
+renderProjects(PROJECTS);
+
+// Your existing filters still work.
+// Optional: add buttons to target these specifically:
+// <button class="btn" data-pfilter="beginner">Beginner</button>
+// <button class="btn" data-pfilter="ml">ML</button>
+// <button class="btn" data-pfilter="django">Django</button>
+document.querySelectorAll('[data-pfilter]').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('[data-pfilter]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const tag = btn.dataset.pfilter;
+  renderProjects(tag === 'all' ? PROJECTS : PROJECTS.filter(p => p.tags.includes(tag)));
+}));
+
+
+
+    // CONTACT form (demo)
+    document.getElementById('contactForm').addEventListener('submit',e=>{
+      e.preventDefault();document.getElementById('formStatus').textContent='Thanks! Message sent.';e.target.reset();
+    });
+
+    // YEAR
+    document.getElementById('year').textContent=new Date().getFullYear();
+  </script>
+</body>
+</html>
